@@ -6,7 +6,9 @@
 /include/
 /tool/
 /vcpkg_installed/
-/docs/
+/docs/*
+!/docs/images/
+!/docs/images/**
 
 CMakeCache.txt
 CMakeFiles/

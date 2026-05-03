@@ -1,17 +1,73 @@
 # MyPlayer
 
-MyPlayer is a Windows desktop media player built with Qt 6, FFmpeg, CUDA and ONNX Runtime. It focuses on local playback, live stream playback, GPU accelerated rendering, AI detection, ASR/VAD, subtitles, recording and monitoring workflows.
+<p align="center">
+  <img src="docs/images/play.png" width="900" alt="MyPlayer preview">
+</p>
 
-The current public source tree is Windows-first. Linux/WSL experiments are intentionally not part of this checkout.
+MyPlayer is a Windows-first C++ media player built with Qt 6, FFmpeg, CUDA and ONNX Runtime. It focuses on three workflows:
+
+1. Local media playback with FFmpeg-based demuxing, decoding, seeking and subtitle support.
+2. Low-latency live stream playback for RTSP, RTMP, HLS and HTTP-FLV.
+3. AI-assisted monitoring with object detection, tracking, ASR/VAD, recording and archive workflows.
+
+The public checkout is intended for source review, learning, research and engineering experimentation. Linux and WSL experiments are not part of this public source tree.
 
 ## Features
 
-- Local media playback with FFmpeg demuxing, audio/video decoding, seeking, playback restore, multi-track audio and subtitles.
-- Live stream playback for RTSP, RTMP, HTTP-FLV and HLS, with source-specific buffering, live tuning, reconnect and low-latency drop policy.
-- GPU path with CUDA decode, CUDA/NPP preprocessing, OpenGL rendering and Anime4K-style enhancement stages.
-- AI pipeline with RT-DETR detection, ByteTrack tracking, Whisper ASR, VAD segmentation and shared inference runtimes.
-- Monitoring workflow with multi-stream sessions, detection overlay, recording, archive backend and status panels.
-- Qt-based desktop UI with playback controls, network controls, diagnostics panels and feature toggles.
+- Local playback for common media files, with playback restore, seeking, audio/video sync and multi-track audio.
+- Live stream playback for RTSP, RTMP, HTTP-FLV and HLS, with reconnect, buffering and low-latency tuning policies.
+- GPU-oriented video path with CUDA decode, CUDA/NPP preprocessing, OpenGL rendering and Anime4K-style enhancement stages.
+- AI pipeline for RT-DETR detection, ByteTrack tracking, Whisper ASR and VAD segmentation.
+- Monitoring workflow with multi-stream sessions, detection overlays, recording, archive indexing and status panels.
+- Qt desktop UI with playback controls, network controls, feature toggles and diagnostic panels.
+
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/images/local-playback.png" width="420" alt="Local playback">
+      <br>
+      <sub>Local playback</sub>
+    </td>
+    <td align="center">
+      <img src="docs/images/live-stream.png" width="420" alt="Live stream playback">
+      <br>
+      <sub>Live stream playback</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="docs/images/monitor-detection.png" width="420" alt="Monitoring with detection">
+      <br>
+      <sub>Monitoring with detection</sub>
+    </td>
+    <td align="center">
+      <img src="docs/images/asr-subtitle.png" width="420" alt="ASR and subtitles">
+      <br>
+      <sub>ASR and subtitles</sub>
+    </td>
+  </tr>
+</table>
+
+## Tested Environment
+
+The project is currently maintained as a Windows desktop application.
+
+| Component | Tested or expected version |
+| --- | --- |
+| OS | Windows 11 |
+| Compiler | Visual Studio 2022, MSVC x64 |
+| CMake | 3.26 or newer |
+| Qt | Qt 6.8.x for MSVC 2022 x64 |
+| CUDA Toolkit | CUDA 12.x |
+| FFmpeg | FFmpeg development and runtime libraries |
+| ONNX Runtime | ONNX Runtime GPU package |
+| OpenCV | OpenCV C++ libraries |
+| whisper | whisper.cpp-compatible library |
+| libass | Resolved from the local vcpkg dependency bundle |
+
+Exact binary package versions are not vendored in this repository. If you redistribute binaries, verify the licenses and build options of each dependency.
 
 ## Source Layout
 
@@ -20,6 +76,8 @@ my_player/
   CMakeLists.txt
   CMakePresets.json
   README.md
+  LICENSE
+  THIRD_PARTY_NOTICES.md
   cmake/
     MyPlayerQt.cmake
     MyPlayerDependencies.cmake
@@ -38,11 +96,11 @@ my_player/
       CMakeLists.txt
 ```
 
-The root `CMakeLists.txt` enters the player project under `src/MyPlayer`. The `cmake/` directory contains reusable CMake modules for Qt discovery, dependency discovery, source collection and runtime plugin deployment. `src/ByteTrack` is built as a local source dependency for the detector pipeline.
+The root `CMakeLists.txt` enters the application project under `src/MyPlayer`. The `cmake/` directory contains reusable CMake modules for Qt discovery, dependency discovery, source collection and runtime plugin deployment. `src/ByteTrack` is built as a local source dependency for the detector pipeline.
 
-## External Dependencies
+## Dependencies
 
-The source tree expects external SDKs and binary libraries to be available next to the checkout. Prepare these directories at the repository root before configuring CMake:
+Large SDKs, runtime binaries, model files and test media are intentionally not included. Prepare dependency directories at the repository root before configuring CMake:
 
 ```text
 include/
@@ -51,7 +109,7 @@ bin/
 vcpkg_installed/
 ```
 
-Expected dependency layout:
+Expected layout:
 
 ```text
 include/
@@ -85,25 +143,11 @@ vcpkg_installed/
   x64-windows/
 ```
 
-`src/ByteTrack` is built from source when present. The generated ByteTrack libraries are written to `lib/Debug/bytetrack` and `lib/Release/bytetrack` during the build.
+`src/ByteTrack` is built from source when present. Generated ByteTrack libraries are written to `lib/Debug/bytetrack` and `lib/Release/bytetrack` during the build.
 
-Runtime models and labels are searched from `bin/common`. Runtime DLLs and Qt plugins are expected under the selected configuration directory, for example `bin/Release`.
+Runtime DLLs and Qt plugins are expected under the selected configuration directory, for example `bin/Release`.
 
-## Requirements
-
-- Windows 11
-- Visual Studio 2022 with MSVC x64
-- CMake 3.26 or newer
-- Qt 6.8.x for MSVC 2022 x64
-- CUDA Toolkit
-- FFmpeg development and runtime libraries
-- ONNX Runtime GPU
-- whisper library
-- OpenCV
-- Eigen
-- libass, currently resolved from `vcpkg_installed/x64-windows`
-
-## Environment
+## Environment Variables
 
 Set these variables before configuring:
 
@@ -114,7 +158,16 @@ $env:CUDA_PATH = "<CUDA Toolkit root>"
 $env:MYPLAYER_CMAKE_TOOLCHAIN_FILE = "<vcpkg root>\scripts\buildsystems\vcpkg.cmake"
 ```
 
-Adjust the paths to match your machine. The project root is passed to CMake through the preset as `MYPLAYER_EXTERNAL_ROOT`, so dependency folders are resolved relative to the checkout.
+Example values:
+
+```powershell
+$env:MYPLAYER_QT_ROOT = "D:\Qt\6.8.2\msvc2022_64"
+$env:Qt6_DIR = "$env:MYPLAYER_QT_ROOT\lib\cmake\Qt6"
+$env:CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.8"
+$env:MYPLAYER_CMAKE_TOOLCHAIN_FILE = "D:\vcpkg\scripts\buildsystems\vcpkg.cmake"
+```
+
+The preset passes `MYPLAYER_EXTERNAL_ROOT` to CMake, so dependency folders are resolved relative to the repository root.
 
 ## Build
 
@@ -154,18 +207,75 @@ Run the executable from the generated runtime directory:
 
 The runtime directory must contain the required Qt plugins, FFmpeg DLLs, ONNX Runtime DLLs, CUDA-related runtime DLLs, model files and label files. The CMake deploy step copies selected Qt plugins when `MYPLAYER_QT_ROOT` is configured.
 
-## Architecture Overview
+## Model Files
 
-- `src/MyPlayer/core` contains media session, demux, decode, audio, video, recording, archive and monitor backend code.
-- `src/MyPlayer/features` contains feature modules such as detector, ASR, VAD, subtitle and Anime4K.
-- `src/MyPlayer/app` contains Qt application UI, views and controllers.
-- `src/MyPlayer/ui` contains reusable playback chrome and video widget UI code.
-- `src/ByteTrack` is a third-party tracking component used by the detector pipeline.
+AI features are optional at runtime, but they require model and label files when enabled.
+
+Expected location:
+
+```text
+bin/common/models/
+bin/common/labels/
+```
+
+Typical files:
+
+| File | Purpose | Required for |
+| --- | --- | --- |
+| `rtdetr-l.onnx` | Object detection | Detector |
+| `coco80.txt` | Detection labels | Detector |
+| Whisper model file | Speech recognition | ASR |
+| VAD model file | Voice activity detection | VAD |
+
+Model files are not included. Check the original model and dataset licenses before use or redistribution.
+
+## Usage
+
+### Open local media
+
+1. Launch `MyPlayer.exe`.
+2. Click `Open`.
+3. Select a supported media file.
+
+### Play a live stream
+
+1. Enter an RTSP, RTMP, HLS or HTTP-FLV URL in the network input field.
+2. Click `Connect`.
+3. Adjust network settings if you need balanced or low-latency playback.
+
+### Enable AI detection
+
+1. Place the detection model and label file under `bin/common/models` and `bin/common/labels`.
+2. Launch the player.
+3. Enable detection from the feature controls.
+
+## Troubleshooting
+
+### CMake cannot find Qt6
+
+Check that `MYPLAYER_QT_ROOT` points to the MSVC x64 Qt installation and `Qt6_DIR` points to `lib/cmake/Qt6`.
+
+### CUDA toolset cannot be found
+
+Check that `CUDA_PATH` points to a CUDA Toolkit installation supported by Visual Studio.
+
+### ONNX Runtime or FFmpeg DLLs are missing
+
+Copy the required runtime DLLs to `bin/Release` or `bin/Debug`, depending on the configuration you run.
+
+### Detector model or labels are missing
+
+Place detector model files under `bin/common/models` and label files under `bin/common/labels`.
+
+## Known Limitations
+
+- Windows-first source tree. Linux, macOS and WSL builds are not supported by this public checkout.
+- Large SDKs, runtime DLLs, model files and test videos are not included.
+- AI features require compatible model files. GPU acceleration requires an NVIDIA GPU and CUDA runtime.
+- Commercial redistribution requires checking third-party licenses, especially Qt, FFmpeg builds, ONNX Runtime, CUDA runtime files and model files.
 
 ## License
 
 MyPlayer source code is released under the MIT License. See `LICENSE`.
 
-The project is suitable for learning, research and engineering experimentation, but it is not limited to non-commercial use. Commercial use is allowed by the project license, as long as you also comply with the licenses of Qt, FFmpeg, CUDA, ONNX Runtime, OpenCV, Eigen, libass, whisper, ByteTrack and any model files you use.
-
-See `THIRD_PARTY_NOTICES.md` for dependency notices.
+The project license does not override third-party licenses. See `THIRD_PARTY_NOTICES.md` for dependency notices.

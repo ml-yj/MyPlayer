@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-MyPlayer uses or can link against the following third-party components. This repository does not vendor the large binary dependency bundle, runtime DLLs, model files or test media. Users are responsible for obtaining dependencies from their original sources and complying with their licenses.
+MyPlayer uses third-party source code, SDKs, runtime libraries and optional model files. This repository does not vendor large binary dependency bundles, runtime DLLs, model files or test media. Users are responsible for obtaining dependencies from their original sources and complying with their licenses.
 
 ## Source Code Included In This Repository
 
@@ -12,25 +12,25 @@ MyPlayer uses or can link against the following third-party components. This rep
 - Copyright: Copyright (c) 2021 Yifu Zhang
 - Notice: the ByteTrack license text is preserved in `src/ByteTrack/LICENSE`.
 
-## External Dependencies Not Vendored In This Repository
+## External Dependencies
 
 ### Qt
 
 - Website: https://www.qt.io/
-- License: available under commercial and open-source license options.
+- License: commercial and open-source license options are available from Qt.
 - Notice: if distributing Qt runtime libraries or plugins, comply with the selected Qt license terms.
 
 ### FFmpeg
 
 - Website: https://ffmpeg.org/
-- License: FFmpeg is commonly LGPL, but specific builds can become GPL or include nonfree components depending on configuration.
+- License: FFmpeg is commonly LGPL, but specific builds can become GPL or include nonfree components depending on build options.
 - Notice: if distributing FFmpeg binaries, verify the exact build configuration and include the required license notices.
 
-### CUDA Toolkit and NVIDIA Runtime Libraries
+### CUDA Toolkit And NVIDIA Runtime Libraries
 
 - Website: https://developer.nvidia.com/cuda-toolkit
 - License: NVIDIA software license terms.
-- Notice: CUDA and related NVIDIA runtime files are not part of this repository.
+- Notice: CUDA headers, libraries and runtime files are not part of this repository.
 
 ### ONNX Runtime
 
@@ -42,7 +42,7 @@ MyPlayer uses or can link against the following third-party components. This rep
 
 - Website: https://opencv.org/
 - License: Apache License 2.0.
-- Notice: OpenCV binaries are not part of this repository.
+- Notice: OpenCV headers and binaries are not part of this repository.
 
 ### Eigen
 
@@ -62,9 +62,17 @@ MyPlayer uses or can link against the following third-party components. This rep
 - License: MIT License.
 - Notice: Whisper libraries and model files are not part of this repository.
 
-## Models, Labels And Test Media
+## Model Files, Labels And Test Media
 
-Model files, labels and test videos are intentionally excluded from this repository. Before using or redistributing any model or dataset-derived file, check the license from the original source.
+Model files, labels and test videos are intentionally excluded from this repository.
+
+Before using or redistributing any model, label file or dataset-derived artifact, check the license from the original source. This is especially important for object detection models, ASR models, VAD models and label files derived from public datasets.
+
+## Binary Redistribution
+
+The MyPlayer source code is released under the MIT License. A binary distribution may include additional obligations because it can contain Qt plugins, FFmpeg builds, CUDA runtime files, ONNX Runtime binaries, OpenCV binaries, libass binaries, model files or other third-party artifacts.
+
+Review the exact dependency versions and licenses before publishing any binary package.
 
 ## No Warranty
 
