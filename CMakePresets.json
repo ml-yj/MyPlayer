@@ -1,0 +1,42 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 26,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "vs2022-x64",
+      "displayName": "VS2022 x64",
+      "generator": "Visual Studio 17 2022",
+      "binaryDir": "${sourceDir}/_cmake_build",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "CMAKE_GENERATOR_TOOLSET": "cuda=$env{CUDA_PATH}",
+        "CMAKE_TOOLCHAIN_FILE": "$env{MYPLAYER_CMAKE_TOOLCHAIN_FILE}",
+        "MYPLAYER_EXTERNAL_ROOT": "${sourceDir}",
+        "MYPLAYER_LIBASS_ROOT": "${sourceDir}/vcpkg_installed/x64-windows",
+        "Qt6_DIR": "$env{Qt6_DIR}",
+        "MYPLAYER_QT_ROOT": "$env{MYPLAYER_QT_ROOT}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "configurePreset": "vs2022-x64",
+      "configuration": "Debug"
+    },
+    {
+      "name": "release",
+      "displayName": "Release",
+      "configurePreset": "vs2022-x64",
+      "configuration": "Release"
+    }
+  ]
+}

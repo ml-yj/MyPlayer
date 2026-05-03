@@ -1,0 +1,156 @@
+include_guard(GLOBAL)
+
+find_package(CUDAToolkit REQUIRED)
+
+set(MYPLAYER_LOCAL_INCLUDE_DIR "${MYPLAYER_EXTERNAL_ROOT}/include")
+set(MYPLAYER_CUDA_INCLUDE_DIR "${MYPLAYER_LOCAL_INCLUDE_DIR}/cuda12")
+set(MYPLAYER_FFMPEG_INCLUDE_DIR "${MYPLAYER_LOCAL_INCLUDE_DIR}/ffmpeg")
+set(MYPLAYER_ONNXRUNTIME_INCLUDE_DIR "${MYPLAYER_LOCAL_INCLUDE_DIR}/onnxruntime")
+set(MYPLAYER_WHISPER_INCLUDE_DIR "${MYPLAYER_LOCAL_INCLUDE_DIR}/whisper")
+
+set(MYPLAYER_LOCAL_LIB_DIR "${MYPLAYER_EXTERNAL_ROOT}/lib")
+set(MYPLAYER_LOCAL_LIB_COMMON_DIR "${MYPLAYER_LOCAL_LIB_DIR}/common")
+set(MYPLAYER_FFMPEG_LIB_DIR "${MYPLAYER_LOCAL_LIB_COMMON_DIR}/ffmpeg")
+set(MYPLAYER_ONNXRUNTIME_LIB_DIR "${MYPLAYER_LOCAL_LIB_COMMON_DIR}/onnxruntime")
+set(MYPLAYER_WHISPER_LIB_DIR "${MYPLAYER_LOCAL_LIB_COMMON_DIR}/whisper")
+set(MYPLAYER_LOCAL_LIB_DEBUG_DIR "${MYPLAYER_LOCAL_LIB_DIR}/Debug")
+set(MYPLAYER_BYTETRACK_LIB_DEBUG_DIR "${MYPLAYER_LOCAL_LIB_DEBUG_DIR}/bytetrack")
+set(MYPLAYER_OPENCV_LIB_DEBUG_DIR "${MYPLAYER_LOCAL_LIB_DEBUG_DIR}/opencv")
+set(MYPLAYER_LOCAL_LIB_RELEASE_DIR "${MYPLAYER_LOCAL_LIB_DIR}/Release")
+set(MYPLAYER_BYTETRACK_LIB_RELEASE_DIR "${MYPLAYER_LOCAL_LIB_RELEASE_DIR}/bytetrack")
+set(MYPLAYER_OPENCV_LIB_RELEASE_DIR "${MYPLAYER_LOCAL_LIB_RELEASE_DIR}/opencv")
+
+set(MYPLAYER_RUNTIME_OUTPUT_DIR "${MYPLAYER_EXTERNAL_ROOT}/bin")
+set(MYPLAYER_RUNTIME_COMMON_DIR "${MYPLAYER_RUNTIME_OUTPUT_DIR}/common")
+set(MYPLAYER_RUNTIME_OUTPUT_DEBUG_DIR "${MYPLAYER_RUNTIME_OUTPUT_DIR}/Debug")
+set(MYPLAYER_RUNTIME_OUTPUT_RELEASE_DIR "${MYPLAYER_RUNTIME_OUTPUT_DIR}/Release")
+
+set(MYPLAYER_VCPKG_TRIPLET "x64-windows" CACHE STRING "vcpkg triplet used for optional libass lookup")
+
+if(DEFINED VCPKG_INSTALLED_DIR AND EXISTS "${VCPKG_INSTALLED_DIR}/${MYPLAYER_VCPKG_TRIPLET}")
+    set(_myplayer_default_libass_root "${VCPKG_INSTALLED_DIR}/${MYPLAYER_VCPKG_TRIPLET}")
+else()
+    set(_myplayer_default_libass_root "${MYPLAYER_EXTERNAL_ROOT}/vcpkg_installed/${MYPLAYER_VCPKG_TRIPLET}")
+endif()
+
+set(MYPLAYER_LIBASS_ROOT "${_myplayer_default_libass_root}" CACHE PATH "libass dependency root")
+
+foreach(required_path IN ITEMS
+    "${MYPLAYER_LOCAL_INCLUDE_DIR}"
+    "${MYPLAYER_CUDA_INCLUDE_DIR}"
+    "${MYPLAYER_FFMPEG_INCLUDE_DIR}"
+    "${MYPLAYER_ONNXRUNTIME_INCLUDE_DIR}"
+    "${MYPLAYER_WHISPER_INCLUDE_DIR}"
+    "${MYPLAYER_LOCAL_LIB_DIR}"
+    "${MYPLAYER_LOCAL_LIB_COMMON_DIR}"
+    "${MYPLAYER_FFMPEG_LIB_DIR}"
+    "${MYPLAYER_ONNXRUNTIME_LIB_DIR}"
+    "${MYPLAYER_WHISPER_LIB_DIR}"
+    "${MYPLAYER_LOCAL_LIB_DEBUG_DIR}"
+    "${MYPLAYER_BYTETRACK_LIB_DEBUG_DIR}"
+    "${MYPLAYER_OPENCV_LIB_DEBUG_DIR}"
+    "${MYPLAYER_LOCAL_LIB_RELEASE_DIR}"
+    "${MYPLAYER_BYTETRACK_LIB_RELEASE_DIR}"
+    "${MYPLAYER_OPENCV_LIB_RELEASE_DIR}"
+    "${MYPLAYER_RUNTIME_OUTPUT_DIR}"
+    "${MYPLAYER_RUNTIME_COMMON_DIR}"
+    "${MYPLAYER_RUNTIME_OUTPUT_DEBUG_DIR}"
+    "${MYPLAYER_RUNTIME_OUTPUT_RELEASE_DIR}"
+    "${MYPLAYER_LIBASS_ROOT}/include"
+    "${MYPLAYER_LIBASS_ROOT}/lib"
+)
+    if(NOT EXISTS "${required_path}")
+        message(FATAL_ERROR "Required dependency path does not exist: ${required_path}")
+    endif()
+endforeach()
+
+function(myplayer_find_local_library out_var library_name)
+    string(MAKE_C_IDENTIFIER "MYPLAYER_LOCAL_${library_name}_LIBRARY" _cache_var)
+    unset(${_cache_var} CACHE)
+    find_library(${_cache_var}
+        NAMES "${library_name}"
+        PATHS ${ARGN}
+        REQUIRED
+        NO_DEFAULT_PATH
+    )
+    set(${out_var} "${${_cache_var}}" PARENT_SCOPE)
+endfunction()
+
+add_library(myplayer_libass INTERFACE)
+
+find_path(MYPLAYER_LIBASS_INCLUDE_DIR
+    NAMES ass/ass.h
+    PATHS "${MYPLAYER_LIBASS_ROOT}/include"
+    REQUIRED
+    NO_DEFAULT_PATH
+)
+
+find_library(MYPLAYER_LIBASS_LIBRARY_RELEASE
+    NAMES ass
+    PATHS "${MYPLAYER_LIBASS_ROOT}/lib"
+    REQUIRED
+    NO_DEFAULT_PATH
+)
+
+find_library(MYPLAYER_LIBASS_LIBRARY_DEBUG
+    NAMES ass
+    PATHS "${MYPLAYER_LIBASS_ROOT}/debug/lib"
+    REQUIRED
+    NO_DEFAULT_PATH
+)
+
+target_include_directories(myplayer_libass INTERFACE "${MYPLAYER_LIBASS_INCLUDE_DIR}")
+target_link_libraries(myplayer_libass INTERFACE
+    "$<$<CONFIG:Debug>:${MYPLAYER_LIBASS_LIBRARY_DEBUG}>"
+    "$<$<NOT:$<CONFIG:Debug>>:${MYPLAYER_LIBASS_LIBRARY_RELEASE}>"
+)
+
+myplayer_find_local_library(MYPLAYER_ONNXRUNTIME_LIBRARY onnxruntime "${MYPLAYER_ONNXRUNTIME_LIB_DIR}")
+myplayer_find_local_library(MYPLAYER_WHISPER_LIBRARY whisper "${MYPLAYER_WHISPER_LIB_DIR}")
+
+set(MYPLAYER_FFMPEG_INCLUDE_DIRS "${MYPLAYER_FFMPEG_INCLUDE_DIR}")
+set(MYPLAYER_FFMPEG_LINK_DIRS "${MYPLAYER_FFMPEG_LIB_DIR}")
+set(MYPLAYER_FFMPEG_LINK_LIBRARIES)
+
+foreach(_myplayer_ffmpeg_library IN ITEMS avcodec avdevice avfilter avformat avutil postproc swresample swscale)
+    string(TOUPPER "${_myplayer_ffmpeg_library}" _myplayer_ffmpeg_library_upper)
+    myplayer_find_local_library(MYPLAYER_${_myplayer_ffmpeg_library_upper}_LIBRARY
+        "${_myplayer_ffmpeg_library}"
+        "${MYPLAYER_FFMPEG_LIB_DIR}"
+    )
+    list(APPEND MYPLAYER_FFMPEG_LINK_LIBRARIES "${MYPLAYER_${_myplayer_ffmpeg_library_upper}_LIBRARY}")
+endforeach()
+
+set(MYPLAYER_BYTETRACK_SOURCE_DIR "${MYPLAYER_EXTERNAL_ROOT}/src/ByteTrack")
+
+if(EXISTS "${MYPLAYER_BYTETRACK_SOURCE_DIR}/CMakeLists.txt")
+    add_subdirectory("${MYPLAYER_BYTETRACK_SOURCE_DIR}" "${CMAKE_BINARY_DIR}/_deps/bytetrack")
+    add_library(myplayer_bytetrack ALIAS bytetrack)
+else()
+    unset(MYPLAYER_BYTETRACK_LIBRARY_RELEASE CACHE)
+    unset(MYPLAYER_BYTETRACK_LIBRARY_DEBUG CACHE)
+
+    find_library(MYPLAYER_BYTETRACK_LIBRARY_RELEASE
+        NAMES bytetrack
+        PATHS "${MYPLAYER_BYTETRACK_LIB_RELEASE_DIR}"
+        REQUIRED
+        NO_DEFAULT_PATH
+    )
+
+    find_library(MYPLAYER_BYTETRACK_LIBRARY_DEBUG
+        NAMES bytetrackd bytetrack
+        PATHS
+            "${MYPLAYER_BYTETRACK_LIB_DEBUG_DIR}"
+            "${MYPLAYER_BYTETRACK_LIB_RELEASE_DIR}"
+        REQUIRED
+        NO_DEFAULT_PATH
+    )
+
+    add_library(myplayer_bytetrack UNKNOWN IMPORTED)
+    set_target_properties(myplayer_bytetrack PROPERTIES
+        IMPORTED_LOCATION_DEBUG "${MYPLAYER_BYTETRACK_LIBRARY_DEBUG}"
+        IMPORTED_LOCATION_RELEASE "${MYPLAYER_BYTETRACK_LIBRARY_RELEASE}"
+        IMPORTED_LOCATION_RELWITHDEBINFO "${MYPLAYER_BYTETRACK_LIBRARY_RELEASE}"
+        IMPORTED_LOCATION_MINSIZEREL "${MYPLAYER_BYTETRACK_LIBRARY_RELEASE}"
+    )
+endif()

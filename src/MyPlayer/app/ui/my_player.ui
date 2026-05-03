@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MyPlayerClass</class>
+ <widget class="QWidget" name="MyPlayerClass">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1400</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MyPlayer</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+
+
+QWidget {
+    
+    font-family: -apple-system, &quot;SF Pro Display&quot;, &quot;Microsoft YaHei UI&quot;, sans-serif;
+    color: #F5F5F7; 
+}
+
+
+
+
+QPushButton {
+    
+    background-color: rgba(255, 255, 255, 0.15); 
+    
+    
+    border: 1px solid rgba(255, 255, 255, 0.3);  
+    border-radius: 8px;                          
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;                            
+    color: #F5F5F7;                              
+    outline: none;                               
+}
+
+
+QPushButton:hover {
+    background-color: rgba(255, 255, 255, 0.25); 
+    border: 1px solid rgba(255, 255, 255, 0.45); 
+}
+
+
+QPushButton:pressed {
+    background-color: rgba(255, 255, 255, 0.1);  
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 7px;                            
+    padding-bottom: 5px;
+}
+
+
+
+
+QSlider {
+    background: transparent;
+    border: none;
+}
+
+
+QSlider::groove:horizontal {
+    background: rgba(255, 255, 255, 0.2);        
+    height: 4px;                                 
+    border-radius: 2px;
+}
+
+
+QSlider::sub-page:horizontal {
+    background: rgba(255, 255, 255, 0.95);
+    height: 4px;
+    border-radius: 2px;
+}
+
+
+QSlider::handle:horizontal {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.15);       
+    width: 14px;                                 
+    height: 14px;
+    margin: -5px 0;                              
+    border-radius: 7px;                          
+}
+
+
+QSlider::handle:horizontal:hover {
+    background: #FFFFFF;
+    border: 3px solid rgba(255, 255, 255, 0.4);  
+}
+
+
+
+
+QSlider::groove:vertical {
+    background: rgba(255, 255, 255, 0.2);
+    width: 4px;
+    border-radius: 2px;
+}
+
+QSlider::sub-page:vertical {                     
+    background: rgba(255, 255, 255, 0.2);
+    width: 4px;
+    border-radius: 2px;
+}
+
+QSlider::add-page:vertical {                     
+    background: rgba(255, 255, 255, 0.95);
+    width: 4px;
+    border-radius: 2px;
+}
+
+QSlider::handle:vertical {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    width: 14px;
+    height: 14px;
+    margin: 0 -5px;                              
+    border-radius: 7px;
+}
+
+QSlider::handle:vertical:hover {
+    background: #FFFFFF;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+}</string>
+  </property>
+  <widget class="VideoWidget" name="video">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1400</width>
+     <height>800</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="openFile">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>710</y>
+     <width>75</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="isplay">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>710</y>
+     <width>75</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Play</string>
+   </property>
+  </widget>
+  <widget class="Slider" name="playPos">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>760</y>
+     <width>1311</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>10000</number>
+   </property>
+   <property name="pageStep">
+    <number>1</number>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Orientation::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QSlider" name="speedSlider">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>680</y>
+     <width>92</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="minimum">
+    <number>5</number>
+   </property>
+   <property name="maximum">
+    <number>20</number>
+   </property>
+   <property name="singleStep">
+    <number>10</number>
+   </property>
+   <property name="value">
+    <number>10</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Orientation::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="speedLabel">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>680</y>
+     <width>33</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="text">
+    <string>1.0x</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="timeLabel">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>750</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="text">
+    <string>00:00 / 00:00</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="volumeSlider">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>570</y>
+     <width>20</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>100</number>
+   </property>
+   <property name="value">
+    <number>50</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Orientation::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="urlInput">
+   <property name="geometry">
+    <rect>
+     <x>220</x>
+     <y>710</y>
+     <width>300</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLineEdit {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 13px;
+    color: #F5F5F7;
+}
+QLineEdit:focus {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.18);
+}</string>
+   </property>
+   <property name="placeholderText">
+    <string>rtsp:// rtmp:// http:// ...</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="openUrl">
+   <property name="geometry">
+    <rect>
+     <x>530</x>
+     <y>710</y>
+     <width>86</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="liveLabel">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>710</y>
+     <width>66</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QLabel {
+    background-color: rgba(255, 59, 48, 0.85);
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 6px;
+    padding: 4px 10px;
+}</string>
+   </property>
+   <property name="text">
+    <string> LIVE</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignmentFlag::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="bcsPanel">
+   <property name="geometry">
+    <rect>
+     <x>1290</x>
+     <y>50</y>
+     <width>100</width>
+     <height>180</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">QWidget#bcsPanel {
+    background-color: rgba(30, 30, 30, 0.7);
+    border-radius: 10px;
+}</string>
+   </property>
+   <widget class="QLabel" name="bcsTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>5</y>
+      <width>80</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);
+font-size: 12px;
+font-weight: 600;</string>
+    </property>
+    <property name="text">
+     <string>Color</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="brightnessSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>-200</number>
+    </property>
+    <property name="maximum">
+     <number>200</number>
+    </property>
+    <property name="value">
+     <number>0</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="brightnessLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>45</y>
+      <width>80</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 200, 200);
+font-size: 10px;</string>
+    </property>
+    <property name="text">
+     <string>Bright: 0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="contrastSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>70</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>300</number>
+    </property>
+    <property name="value">
+     <number>100</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="contrastLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>85</y>
+      <width>80</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 200, 200);
+font-size: 10px;</string>
+    </property>
+    <property name="text">
+     <string>Contrast: 1.0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QSlider" name="saturationSlider">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>80</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="minimum">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <number>300</number>
+    </property>
+    <property name="value">
+     <number>100</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Orientation::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="saturationLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>125</y>
+      <width>80</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(200, 200, 200);
+font-size: 10px;</string>
+    </property>
+    <property name="text">
+     <string>Satur: 1.0</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bcsResetBtn">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>150</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+    background-color: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    font-size: 11px;
+    color: #F5F5F7;
+}
+QPushButton:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+QPushButton:pressed {
+    background-color: rgba(255, 255, 255, 0.1);
+}</string>
+    </property>
+    <property name="text">
+     <string>Reset</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>VideoWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>ui/video/video_widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Slider</class>
+   <extends>QSlider</extends>
+   <header>slider.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="my_player.qrc"/>
+ </resources>
+ <connections/>
+</ui>
